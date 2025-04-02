@@ -1,0 +1,154 @@
+﻿<!-- File: FavoritesView.xaml -->
+<UserControl x:Class="DataGridNamespace.FavoritesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DataGridNamespace"
+             xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks" 
+             mc:Ignorable="d" 
+             d:DesignHeight="650" d:DesignWidth="900"
+             Background="#EFF2F7">
+
+    <UserControl.Resources>
+        <!-- تعليق: الأنماط من الخطوات السابقة -->
+        <!-- Styles from previous steps -->
+        <Style TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Background" Value="#006060"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="BorderBrush" Value="#004D40"/>
+        </Style>
+        <Style TargetType="{x:Type DataGridRow}">
+            <Setter Property="Padding" Value="0,4"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Background" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E0F2F1"/>
+                </Trigger>
+                <Trigger Property="AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#F8F9FA"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#B2DFDB"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="{x:Type DataGridCell}">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="DataGridButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="3" Name="ButtonBorder">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#4DB6AC"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#00897B"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="25,20" HorizontalAlignment="Center" VerticalAlignment="Top">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Title -->
+            <RowDefinition Height="*"/>
+            <!-- Content Area -->
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <TextBlock Grid.Row="0" Text="My Favorite Theses" FontSize="26" FontWeight="SemiBold" Foreground="#004D40" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+        <!-- Content Grid (Holds DataGrid, Empty Message, Loading Indicator) -->
+        <Grid Grid.Row="1">
+
+            <!-- Empty Message -->
+            <TextBlock x:Name="NoFavoritesMessage" Text="You haven't added any theses to your favorites yet." FontSize="18" Foreground="#607D8B" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,50,0,0" FontStyle="Italic" TextWrapping="Wrap" Visibility="Collapsed"/>
+
+            <!-- DataGrid -->
+            <DataGrid x:Name="FavoritesDataGrid" Margin="0" ItemsSource="{Binding FavoriteTheses}" AutoGenerateColumns="False" IsReadOnly="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="750" MaxWidth="1000" GridLinesVisibility="None" Background="White" BorderBrush="#CCCCCC" BorderThickness="1" CanUserAddRows="False" SelectionMode="Single" HeadersVisibility="Column" RowHeaderWidth="0" AlternationCount="2">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="3*"/>
+                    <DataGridTextColumn Header="Author" Binding="{Binding Author}" Width="2*"/>
+                    <DataGridTextColumn Header="Specialty" Binding="{Binding Specialty}" Width="2*"/>
+                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="1.2*"/>
+                    <DataGridTextColumn Header="Year" Binding="{Binding DisplayYear}" Width="Auto"/>
+                    <DataGridTemplateColumn Header="Actions" Width="Auto" MinWidth="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource DataGridButtonStyle}" Click="ViewPdfButton_Click" ToolTip="View PDF" CommandParameter="{Binding PdfLink}">
+                                        <icon:PackIconMaterial Kind="FilePdfBox" Foreground="#C0392B" Width="18" Height="18"/>
+                                    </Button>
+                                    <Button Style="{StaticResource DataGridButtonStyle}" Click="RemoveFavoriteButton_Click" ToolTip="Remove from Favorites" CommandParameter="{Binding}">
+                                        <icon:PackIconMaterial Kind="HeartBroken" Foreground="#D32F2F" Width="18" Height="18"/>
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Loading Indicator -->
+            <!-- تعليق: تأكد من أن هذا الـ Border مغلق بشكل صحيح -->
+            <!-- Ensure this Border tag is correctly closed -->
+            <Border x:Name="LoadingIndicator" Background="#AAFFFFFF" CornerRadius="0" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="20">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <!-- تعليق: تم إزالة النمط الديناميكي المؤقت من ProgressBar -->
+                    <!-- Temporarily removed dynamic style from ProgressBar -->
+                    <ProgressBar IsIndeterminate="True" Width="30" Height="30" Margin="0,0,10,0"/>
+                    <TextBlock Text="Loading Favorites..." VerticalAlignment="Center" FontSize="16" Foreground="#333" FontWeight="Medium"/>
+                </StackPanel>
+            </Border>
+            <!-- تعليق: تأكد من عدم وجود أحرف إضافية '<' أو '>' هنا -->
+            <!-- Ensure no extra '<' or '>' characters here -->
+
+        </Grid>
+        <!-- تعليق: نهاية Grid الصف 1 -->
+        <!-- Closing tag for Grid at Row 1 -->
+
+    </Grid>
+    <!-- تعليق: نهاية Grid الرئيسي -->
+    <!-- Closing tag for main Grid -->
+
+</UserControl>
+<!-- تعليق: نهاية UserControl -->
+<!-- Closing tag for UserControl -->
